@@ -41,6 +41,7 @@
     "@mui/x-data-grid": "^8.10.0",
     "@mui/x-date-pickers": "^8.10.0",
     "@mui/x-tree-view": "^8.10.0",
+    "@react-pdf/renderer": "^4.3.1",
     "@stripe/react-stripe-js": "^5.0.0",
     "@stripe/stripe-js": "^8.0.0",
     "@vis.gl/react-google-maps": "^1.5.5",

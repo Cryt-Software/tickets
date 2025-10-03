@@ -35,35 +35,13 @@ import { Image } from 'src/components/image';
 
 // ----------------------------------------------------------------------
 
-// Helper function to generate dates based on current month
-const generateDates = () => {
-  const today = new Date();
-  const currentYear = today.getFullYear();
-  const currentMonth = today.getMonth(); // 0-based (0 = January, 9 = October)
-  
-  // Generate dates for the current month starting from the 15th
-  const dates = [];
-  for (let day = 15; day <= 26; day++) {
-    const date = new Date(currentYear, currentMonth, day);
-    // Use deterministic availability based on day number to avoid hydration issues
-    const isAvailable = day % 4 !== 0; // Every 4th day is sold out (deterministic)
-    
-    dates.push({
-      date: date.toISOString().split('T')[0], // Format as YYYY-MM-DD
-      time: '9:00 PM',
-      available: isAvailable,
-    });
-  }
-  
-  return dates;
-};
 
 const eventData = {
   id: 'comedy-dublin-stitches',
   title: 'In Stitches Comedy Club: Sun - Wed - Stand Up Comedy',
   organizer: 'In Stitches Comedy Club',
   description: 'In Stitches Comedy Club is the funniest night out with live comedy shows 7 nights a week at the basement of Peadar Kearney Pub in Dublin.',
-  image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F924847563%2F100600144873%2F1%2Foriginal.20241230-132207?w=940&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C0%2C2160%2C1080&s=fdf120b4539a32fb35a0c26d47a4275f',
+  image: '/assets/images/@stiches-comdey.jpg',
   venue: 'Peadar Kearney\'s Pub - Cellar',
   address: '64 Dame Street D02 RT72 Dublin 8',
   price: 15.00, // EUR
@@ -127,7 +105,6 @@ const eventData = {
       answer: 'You must be 18 years or older to ride this laugh train. In at event of parents accompanying their underage child to the show it depends on the venues to allow them in.'
     }
   ],
-  dates: generateDates(),
 };
 
 // Helper function to format EUR currency
@@ -141,12 +118,16 @@ const fCurrencyEUR = (value) => {
 };
 
 export function ComedyDublinView() {
-  const [selectedDate, setSelectedDate] = useState(eventData.dates[0]);
   const [selectedTicket, setSelectedTicket] = useState(eventData.ticketTypes[0]);
   const [quantity, setQuantity] = useState(1);
-  const [openDateDialog, setOpenDateDialog] = useState(false);
-  const [openTicketDialog, setOpenTicketDialog] = useState(false);
   const [openCheckoutDialog, setOpenCheckoutDialog] = useState(false);
+  
+  // Default date for checkout (use today's date + 1 day)
+  const defaultDate = {
+    date: new Date().toISOString().split('T')[0],
+    time: '9:00 PM',
+    available: true,
+  };
   // const [stripePromise, setStripePromise] = useState(null);
 
   // useEffect(() => {
@@ -279,7 +260,7 @@ export function ComedyDublinView() {
   );
 
   const renderLocation = () => (
-    <Card sx={{ mb: 4 }}>
+    <Card sx={{ mb: 3 }}>
       <CardContent>
         <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
           <Iconify icon="solar:map-point-bold" width={24} />
@@ -302,7 +283,7 @@ export function ComedyDublinView() {
   );
 
   const renderAgenda = () => (
-    <Card sx={{ mb: 4 }}>
+    <Card>
       <CardContent>
         <Typography variant="h6" sx={{ mb: 3 }}>
           Agenda
@@ -334,138 +315,6 @@ export function ComedyDublinView() {
     </Card>
   );
 
-  const renderDateSelection = () => (
-    <Card sx={{ mb: 4 }}>
-      <CardContent>
-        <Typography variant="h6" sx={{ mb: 3 }}>
-          Select Date
-        </Typography>
-        
-        <Grid container spacing={2}>
-          {eventData.dates.map((date) => (
-            <Grid key={date.date} xs={12} sm={6} md={4} item>
-              <Card
-                variant={selectedDate.date === date.date ? 'outlined' : 'elevation'}
-                sx={{
-                  cursor: 'pointer',
-                  border: selectedDate.date === date.date ? 2 : 1,
-                  borderColor: selectedDate.date === date.date ? 'primary.main' : 'divider',
-                  opacity: date.available ? 1 : 0.5,
-                  '&:hover': {
-                    borderColor: 'primary.main',
-                  },
-                }}
-                onClick={() => date.available && setSelectedDate(date)}
-              >
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <Typography variant="h6" color={date.available ? 'text.primary' : 'text.disabled'}>
-                    {fDate(date.date, 'ddd, MMM DD')}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {date.time}
-                  </Typography>
-                  {!date.available && (
-                    <Chip label="Sold Out" size="small" color="error" sx={{ mt: 1 }} />
-                  )}
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </CardContent>
-    </Card>
-  );
-
-  const renderTicketSelection = () => (
-    <Card sx={{ mb: 4 }}>
-      <CardContent>
-        <Typography variant="h6" sx={{ mb: 3 }}>
-          Select Tickets
-        </Typography>
-        
-        <Stack spacing={2}>
-          {eventData.ticketTypes.map((ticket) => (
-            <Card
-              key={ticket.name}
-              variant={selectedTicket.name === ticket.name ? 'outlined' : 'elevation'}
-              sx={{
-                cursor: 'pointer',
-                border: selectedTicket.name === ticket.name ? 2 : 1,
-                borderColor: selectedTicket.name === ticket.name ? 'primary.main' : 'divider',
-                opacity: ticket.available ? 1 : 0.5,
-                '&:hover': {
-                  borderColor: 'primary.main',
-                },
-              }}
-              onClick={() => ticket.available && setSelectedTicket(ticket)}
-            >
-              <CardContent>
-                <Stack direction="row" alignItems="center" justifyContent="space-between">
-                  <Box>
-                    <Typography variant="h6">{ticket.name}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {ticket.description}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ textAlign: 'right' }}>
-                    <Typography variant="h6" color="primary">
-                      {fCurrencyEUR(ticket.price)}
-                    </Typography>
-                    {!ticket.available && (
-                      <Chip label="Sold Out" size="small" color="error" />
-                    )}
-                  </Box>
-                </Stack>
-              </CardContent>
-            </Card>
-          ))}
-        </Stack>
-        
-        <Divider sx={{ my: 3 }} />
-        
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Typography variant="body2">Quantity</Typography>
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            >
-              -
-            </Button>
-            <Typography variant="h6" sx={{ minWidth: 40, textAlign: 'center' }}>
-              {quantity}
-            </Typography>
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => setQuantity(quantity + 1)}
-            >
-              +
-            </Button>
-          </Stack>
-        </Stack>
-
-        <Divider sx={{ my: 3 }} />
-
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
-          <Typography variant="h6">Total</Typography>
-          <Typography variant="h6" color="primary">
-            {fCurrencyEUR(selectedTicket.price * quantity)}
-          </Typography>
-        </Stack>
-
-        <Button
-          variant="contained"
-          size="large"
-          fullWidth
-          startIcon={<Iconify icon="solar:ticket-bold" />}
-        >
-          Checkout
-        </Button>
-      </CardContent>
-    </Card>
-  );
 
   const renderBooking = () => (
     <Card sx={{ position: 'sticky', top: 24, boxShadow: 3 }}>
@@ -503,7 +352,7 @@ export function ComedyDublinView() {
   );
 
   const renderFAQ = () => (
-    <Card sx={{ mb: 4 }}>
+    <Card>
       <CardContent>
         <Typography variant="h6" sx={{ mb: 3 }}>
           Frequently Asked Questions
@@ -536,184 +385,6 @@ export function ComedyDublinView() {
     </Card>
   );
 
-  const renderDateDialog = () => (
-    <Dialog
-      open={openDateDialog}
-      onClose={() => setOpenDateDialog(false)}
-      maxWidth="md"
-      fullWidth
-    >
-      <DialogTitle>
-        <Typography component="span" sx={{ fontWeight: 'bold', fontSize: '1.25rem' }}>Select Date</Typography>
-      </DialogTitle>
-      
-      <DialogContent>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          Choose your preferred date for the comedy show
-        </Typography>
-        
-        <Grid container spacing={2}>
-          {eventData.dates.map((date) => (
-            <Grid key={date.date} xs={12} sm={6} md={4} item>
-              <Card
-                variant={selectedDate.date === date.date ? 'outlined' : 'elevation'}
-                sx={{
-                  cursor: 'pointer',
-                  border: selectedDate.date === date.date ? 2 : 1,
-                  borderColor: selectedDate.date === date.date ? 'primary.main' : 'divider',
-                  opacity: date.available ? 1 : 0.5,
-                  '&:hover': {
-                    borderColor: 'primary.main',
-                  },
-                }}
-                onClick={() => date.available && setSelectedDate(date)}
-              >
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <Typography variant="h6" color={date.available ? 'text.primary' : 'text.disabled'}>
-                    {fDate(date.date, 'ddd, MMM DD')}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {date.time}
-                  </Typography>
-                  {!date.available && (
-                    <Chip label="Sold Out" size="small" color="error" sx={{ mt: 1 }} />
-                  )}
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </DialogContent>
-      
-      <DialogActions sx={{ p: 3 }}>
-        <Button onClick={() => setOpenDateDialog(false)}>
-          Cancel
-        </Button>
-        <Button 
-          variant="contained" 
-          onClick={() => {
-            setOpenDateDialog(false);
-            setOpenTicketDialog(true);
-          }}
-          startIcon={<Iconify icon="solar:ticket-bold" />}
-        >
-          Continue to Booking
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-
-  const renderTicketDialog = () => (
-    <Dialog
-      open={openTicketDialog}
-      onClose={() => setOpenTicketDialog(false)}
-      maxWidth="sm"
-      fullWidth
-    >
-      <DialogTitle>
-        <Typography component="span" sx={{ fontWeight: 'bold', fontSize: '1.25rem' }}>
-          Select Tickets
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          {fDate(selectedDate.date, 'dddd, MMMM DD, YYYY')} at {selectedDate.time}
-        </Typography>
-      </DialogTitle>
-      
-      <DialogContent>
-        <Stack spacing={3}>
-          {/* Ticket Type Selection */}
-          <Box>
-            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 'bold' }}>
-              Ticket Type
-            </Typography>
-            <Card
-              variant="outlined"
-              sx={{
-                border: 2,
-                borderColor: 'primary.main',
-                bgcolor: 'primary.lighter',
-              }}
-            >
-              <CardContent>
-                <Stack direction="row" alignItems="center" justifyContent="space-between">
-                  <Box>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>{selectedTicket.name}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {selectedTicket.description}
-                    </Typography>
-                  </Box>
-                  <Typography variant="subtitle1" color="primary" sx={{ fontWeight: 'bold' }}>
-                    {fCurrencyEUR(selectedTicket.price)}
-                  </Typography>
-                </Stack>
-              </CardContent>
-            </Card>
-          </Box>
-
-          {/* Quantity Selection */}
-          <Box>
-            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 'bold' }}>
-              Quantity
-            </Typography>
-            <Stack direction="row" alignItems="center" spacing={2}>
-              <Button
-                variant="outlined"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                disabled={quantity <= 1}
-              >
-                -
-              </Button>
-              <Typography variant="subtitle1" sx={{ minWidth: 40, textAlign: 'center', fontWeight: 'bold' }}>
-                {quantity}
-              </Typography>
-              <Button
-                variant="outlined"
-                onClick={() => setQuantity(quantity + 1)}
-              >
-                +
-              </Button>
-            </Stack>
-          </Box>
-
-          {/* Order Summary */}
-          <Box sx={{ p: 2, bgcolor: 'background.neutral', borderRadius: 1 }}>
-            <Stack direction="row" justifyContent="space-between" sx={{ mb: 1 }}>
-              <Typography variant="body2" color="text.secondary">
-                {selectedTicket.name} × {quantity}
-              </Typography>
-              <Typography variant="body2">
-                {fCurrencyEUR(selectedTicket.price * quantity)}
-              </Typography>
-            </Stack>
-            <Divider sx={{ my: 1 }} />
-            <Stack direction="row" justifyContent="space-between">
-              <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Total</Typography>
-              <Typography variant="subtitle1" color="primary" sx={{ fontWeight: 'bold' }}>
-                {fCurrencyEUR(selectedTicket.price * quantity)}
-              </Typography>
-            </Stack>
-          </Box>
-        </Stack>
-      </DialogContent>
-      
-      <DialogActions sx={{ p: 3 }}>
-        <Button onClick={() => setOpenTicketDialog(false)}>
-          Back
-        </Button>
-        <Button 
-          variant="contained" 
-          onClick={() => {
-            setOpenTicketDialog(false);
-            setOpenCheckoutDialog(true);
-          }}
-          startIcon={<Iconify icon="solar:card-bold" />}
-          sx={{ minWidth: 200 }}
-        >
-          Proceed to Payment
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
 
   const renderCheckoutDialog = () => (
     <Dialog
@@ -734,7 +405,7 @@ export function ComedyDublinView() {
       <DialogContent>
         <StripeCheckoutForm
           eventData={eventData}
-          selectedDate={selectedDate}
+          selectedDate={defaultDate}
           selectedTicket={selectedTicket}
           quantity={quantity}
           onSuccess={handlePaymentSuccess}
@@ -758,11 +429,20 @@ export function ComedyDublinView() {
         <Box>
           {renderHeader()}
           {renderOrganizer()}
-          {renderLocation()}
-          {renderAgenda()}
-          {renderDateSelection()}
-          {renderTicketSelection()}
-          {renderFAQ()}
+          {/* Location, Agenda and FAQ in responsive layout for desktop */}
+          <Grid container spacing={3} sx={{ mb: 4 }}>
+            <Grid item xs={12} md={6}>
+              {/* Left column: Location and Agenda stacked */}
+              <Box>
+                {renderLocation()}
+                {renderAgenda()}
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              {/* Right column: FAQ */}
+              {renderFAQ()}
+            </Grid>
+          </Grid>
         </Box>
       </Container>
 
@@ -802,7 +482,7 @@ export function ComedyDublinView() {
             <Button
               variant="contained"
               size="large"
-              onClick={() => setOpenDateDialog(true)}
+              onClick={() => setOpenCheckoutDialog(true)}
               sx={{
                 minWidth: 200,
                 py: 1.5,
@@ -811,14 +491,12 @@ export function ComedyDublinView() {
                 textTransform: 'none',
               }}
             >
-              Check availability
+              Book Tickets Now
             </Button>
           </Box>
         </Container>
       </Box>
 
-      {renderDateDialog()}
-      {renderTicketDialog()}
       {renderCheckoutDialog()}
     </>
   );

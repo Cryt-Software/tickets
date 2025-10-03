@@ -153,25 +153,6 @@ export default function CheckoutSuccessPage() {
             </Stack>
           </CardContent>
         </Card>
-        
-        <Stack direction="row" spacing={2} justifyContent="center">
-          <Button
-            variant="outlined"
-            component={Link}
-            href="/"
-          >
-            <Iconify icon="solar:events-bold" sx={{ mr: 1 }} />
-            Browse More Events
-          </Button>
-          <Button
-            variant="contained"
-            component={Link}
-            href="/events/comedy-dublin"
-          >
-            <Iconify icon="solar:info-circle-bold" sx={{ mr: 1 }} />
-            View Event Details
-          </Button>
-        </Stack>
       </Box>
     </Container>
   );
