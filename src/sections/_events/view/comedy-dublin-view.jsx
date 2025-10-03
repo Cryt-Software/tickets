@@ -48,7 +48,7 @@ const eventData = {
   image: '/assets/images/stiches-comdey.jpg',
   venue: 'Peadar Kearney\'s Pub - Cellar',
   address: '64 Dame Street D02 RT72 Dublin 8',
-  price: 15.00, // EUR
+  price: 12.00, // EUR
   category: 'Comedy',
   rating: 4.8,
   totalReviews: 89,
@@ -69,7 +69,7 @@ const eventData = {
     { time: '10:30 PM', activity: 'Show Finish' },
   ],
   ticketTypes: [
-    { name: 'General Admission', price: 15.00, available: true, description: 'Standard seating' },
+    { name: 'General Admission', price: 12.00, available: true, description: 'Standard seating' },
   ],
   faqs: [
     {
@@ -124,6 +124,11 @@ export function ComedyDublinView() {
   const [selectedTime, setSelectedTime] = useState('9:00 PM');
   const [openBookingDialog, setOpenBookingDialog] = useState(false);
   const [openCheckoutDialog, setOpenCheckoutDialog] = useState(false);
+
+  // Debug: Log quantity changes
+  useEffect(() => {
+    console.log('🔄 Quantity state changed:', quantity);
+  }, [quantity]);
   
   // Available show times for the comedy club
   const availableTimes = [
@@ -140,7 +145,6 @@ export function ComedyDublinView() {
   // }, []);
 
   const handlePaymentSuccess = (paymentIntentId) => {
-    alert(`Payment successful! Payment ID: ${paymentIntentId}`);
     setOpenCheckoutDialog(false);
     
     // Redirect to success page
@@ -640,6 +644,14 @@ export function ComedyDublinView() {
       </DialogTitle>
       
       <DialogContent>
+        {/* Debug: Log quantity being passed */}
+        {console.log('📊 ComedyDublinView Quantity Debug:', {
+          quantity,
+          quantityType: typeof quantity,
+          selectedTicket: selectedTicket?.name,
+          totalCalculation: selectedTicket ? selectedTicket.price * quantity : 'N/A'
+        })}
+        
         <StripeCheckoutForm
           eventData={eventData}
           selectedDate={{

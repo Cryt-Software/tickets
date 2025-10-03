@@ -44,36 +44,22 @@ export const generateTicketPDF = async (bookingData) => {
     const darkGray = '#495057';
     const white = '#ffffff';
 
-    // Header text - clean and bold
-    doc.setTextColor(darkGray);
-    doc.setFontSize(28);
-    doc.setFont('helvetica', 'bold');
-    doc.text('EVENTHUB', pageWidth / 2, 30, { align: 'center' });
-
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Digital Event Ticket', pageWidth / 2, 37, { align: 'center' });
-
-    // Header line break
-    doc.setDrawColor(primaryBlue);
-    doc.setLineWidth(3);
-    doc.line(20, 42, pageWidth - 20, 42);
 
     // Event details - clean card design
     doc.setTextColor(primaryBlue);
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
-    doc.text(bookingData.eventTitle, pageWidth / 2, 55, { align: 'center' });
+    doc.text(bookingData.eventTitle, pageWidth / 2, 20, { align: 'center' });
 
     doc.setTextColor(accentOrange);
     doc.setFontSize(13);
     doc.setFont('helvetica', 'bold');
-    doc.text(bookingData.eventDate, pageWidth / 2, 62, { align: 'center' });
+    doc.text(bookingData.eventDate, pageWidth / 2, 27, { align: 'center' });
 
     // Event details line break
     doc.setDrawColor(secondaryBlue);
     doc.setLineWidth(1);
-    doc.line(20, 68, pageWidth - 20, 68);
+    doc.line(20, 33, pageWidth - 20, 33);
 
     // Generate QR code
     const qrText = `Booking ID: ${bookingData.paymentIntentId}nnEvent: ${bookingData.eventTitle}nDate: ${bookingData.eventDate}nCustomer: ${bookingData.customerEmail}`;
@@ -89,7 +75,7 @@ export const generateTicketPDF = async (bookingData) => {
     doc.setFont('helvetica', 'bold');
     
     // Venue with better spacing
-    doc.text('VENUE:', leftColumn, 78);
+    doc.text('VENUE:', leftColumn, 40);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor('#333333');
     
@@ -99,30 +85,30 @@ export const generateTicketPDF = async (bookingData) => {
     // Venue
     const venueText = bookingData.venue;
     if (venueText.length > 35) {
-      doc.text(venueText.substring(0, 35), valueStartX, 78);
+      doc.text(venueText.substring(0, 35), valueStartX, 40);
       const remainingText = venueText.substring(35);
       if (remainingText.length > 0) {
-        doc.text(remainingText, valueStartX, 82);
+        doc.text(remainingText, valueStartX, 44);
       }
     } else {
-      doc.text(venueText, valueStartX, 78);
+      doc.text(venueText, valueStartX, 40);
     }
 
     // Ticket type - aligned horizontally with venue value
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(darkGray);
-    doc.text('TICKET TYPE:', leftColumn, 84);
+    doc.text('TICKET TYPE:', leftColumn, 46);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor('#333333');
-    doc.text(bookingData.ticketName, valueStartX, 84); // Same X position as venue
+    doc.text(bookingData.ticketName, valueStartX, 46); // Same X position as venue
 
     // Quantity - aligned horizontally with venue and ticket values
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(darkGray);
-    doc.text('QUANTITY:', leftColumn, 90);
+    doc.text('QUANTITY:', leftColumn, 52);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor('#333333');
-    doc.text(bookingData.quantity.toString(), valueStartX, 90); // Same X position as other values
+    doc.text(bookingData.quantity.toString(), valueStartX, 52); // Same X position as other values
 
     // Section divider line
     doc.setDrawColor('#e0e0e0');

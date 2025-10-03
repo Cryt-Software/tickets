@@ -159,11 +159,6 @@ const TicketPDFDocument = ({ bookingData }) => (
   <Document>
     <Page size="A4" orientation="landscape" style={styles.page}>
       <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>EVENTHUB</Text>
-          <Text style={styles.headerSubtitle}>Digital Event Ticket</Text>
-        </View>
 
         {/* Event Details Card */}
         <View style={styles.eventCard}>

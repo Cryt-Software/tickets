@@ -8,10 +8,23 @@ import { createBillingEmailTemplate, createCustomerEmailTemplate } from 'src/uti
 
 import { generateSimpleTicket, generateTicketPDF } from 'src/utils/jspdf-final';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+// Initialize Stripe only if API key is available
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 export async function POST(request) {
   try {
+    // Check if Stripe is properly initialized
+    if (!stripe) {
+      return NextResponse.json(
+        { 
+          success: false,
+          error: 'Stripe configuration missing',
+          details: 'STRIPE_SECRET_KEY environment variable is not set'
+        },
+        { status: 500 }
+      );
+    }
+
     const { 
       eventTitle, 
       eventDate, 
@@ -60,18 +73,27 @@ export async function POST(request) {
           console.log('✅ SMTP connection verified!');
         }
 
-        // Prepare booking data for ticket generation
-        const bookingData = {
-          eventTitle,
-          eventDate,
-          venue: 'Peadar Kearney\'s Pub - Cellar', // You can make this dynamic
-          ticketName,
-          quantity,
-          unitPrice,
-          totalPrice,
-          customerEmail,
-          paymentIntentId: confirmedPayment.id,
-        };
+    // Prepare booking data for ticket generation
+    const bookingData = {
+      eventTitle,
+      eventDate,
+      venue: 'Peadar Kearney\'s Pub - Cellar', // You can make this dynamic
+      ticketName,
+      quantity,
+      unitPrice,
+      totalPrice,
+      customerEmail,
+      paymentIntentId: confirmedPayment.id,
+    };
+
+    // Debug: Log the booking data to verify quantity
+    console.log('📋 Booking Data Debug:', {
+      quantity: quantity,
+      quantityType: typeof quantity,
+      totalPrice: totalPrice,
+      unitPrice: unitPrice,
+      calculatedTotal: unitPrice * quantity
+    });
 
         // Generate PDF ticket
         let ticketAttachment = null;

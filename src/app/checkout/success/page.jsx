@@ -20,7 +20,6 @@ export default function CheckoutSuccessPage() {
       // For now, we'll just show a success message
       setPaymentData({
         id: paymentIntentId,
-        amount_total: 3000, // Example amount in cents
         currency: 'eur',
       });
       setLoading(false);
@@ -91,14 +90,6 @@ export default function CheckoutSuccessPage() {
               </Typography>
               <Typography variant="body2">
                 {paymentData?.id || 'N/A'}
-              </Typography>
-            </Stack>
-            <Stack direction="row" justifyContent="space-between">
-              <Typography variant="body2" color="text.secondary">
-                Amount Paid:
-              </Typography>
-              <Typography variant="body2">
-                €30.00
               </Typography>
             </Stack>
             <Stack direction="row" justifyContent="space-between">

@@ -91,6 +91,14 @@ function CheckoutForm({
         return;
       }
 
+      // Debug: Log the booking data being sent
+      console.log('🚀 StripeCheckoutForm Debug:', {
+        quantity,
+        selectedTicket,
+        totalPrice: selectedTicket.price * quantity,
+        eventData: eventData.title
+      });
+
       // Create payment intent
       const response = await fetch('/api/checkout', {
         method: 'POST',
