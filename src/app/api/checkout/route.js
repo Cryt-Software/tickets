@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
-import Stripe from 'stripe';
-import { createCustomerEmailTemplate, createBillingEmailTemplate } from 'src/utils/email-templates';
-import { generateTicketPDF, generateSimpleTicket } from 'src/utils/jspdf-final';
-const { sendSMTPEmail, testConnection } = require('src/utils/smtp-email');
 
+import Stripe from 'stripe';
+
+import { sendSMTPEmail, testConnection } from 'src/utils/smtp-email';
+
+import { createBillingEmailTemplate, createCustomerEmailTemplate } from 'src/utils/email-templates';
+
+import { generateSimpleTicket, generateTicketPDF } from 'src/utils/jspdf-final';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 

@@ -24,9 +24,13 @@ import CardContent from '@mui/material/CardContent';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import dayjs from 'dayjs';
 
 import { fCurrency } from 'src/utils/format-number';
-import { fDate } from 'src/utils/format-time';
 
 import { _socials } from 'src/_mock';
 
@@ -41,7 +45,7 @@ const eventData = {
   title: 'In Stitches Comedy Club: Sun - Wed - Stand Up Comedy',
   organizer: 'In Stitches Comedy Club',
   description: 'In Stitches Comedy Club is the funniest night out with live comedy shows 7 nights a week at the basement of Peadar Kearney Pub in Dublin.',
-  image: '/assets/images/@stiches-comdey.jpg',
+  image: '/assets/images/stiches-comdey.jpg',
   venue: 'Peadar Kearney\'s Pub - Cellar',
   address: '64 Dame Street D02 RT72 Dublin 8',
   price: 15.00, // EUR
@@ -51,7 +55,7 @@ const eventData = {
   capacity: 80,
   soldTickets: 67,
   isMultipleDates: true,
-  organizerAvatar: '/assets/images/avatar/avatar_1.jpg',
+  organizerAvatar: '/assets/images/stiches-comdey.jpg',
   socialLinks: {
     facebook: 'https://facebook.com/institchesdublin',
     instagram: 'https://instagram.com/institchesdublin',
@@ -93,10 +97,6 @@ const eventData = {
       answer: 'Yes. Our venue is available for private bookings, solo show, live podcast, WIP show, tour show & more. Email: info@institchescomedy.com'
     },
     {
-      question: 'I messed up and bought tickets for the wrong show',
-      answer: 'Please email info@institchescomedy.com and we will do our best to work things out for you.'
-    },
-    {
       question: 'Can I buy Tickets On The Door?',
       answer: 'Yes! But we highly recommend buying tickets on our website before the show as we frequently sell out.'
     },
@@ -120,14 +120,16 @@ const fCurrencyEUR = (value) => {
 export function ComedyDublinView() {
   const [selectedTicket, setSelectedTicket] = useState(eventData.ticketTypes[0]);
   const [quantity, setQuantity] = useState(1);
+  const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [selectedTime, setSelectedTime] = useState('9:00 PM');
+  const [openBookingDialog, setOpenBookingDialog] = useState(false);
   const [openCheckoutDialog, setOpenCheckoutDialog] = useState(false);
   
-  // Default date for checkout (use today's date + 1 day)
-  const defaultDate = {
-    date: new Date().toISOString().split('T')[0],
-    time: '9:00 PM',
-    available: true,
-  };
+  // Available show times for the comedy club
+  const availableTimes = [
+    { label: '6:30 PM', value: '6:30 PM', day: 'Sunday' },
+    { label: '9:00 PM', value: '9:00 PM', day: 'Sunday' },
+  ];
   // const [stripePromise, setStripePromise] = useState(null);
 
   // useEffect(() => {
@@ -260,8 +262,8 @@ export function ComedyDublinView() {
   );
 
   const renderLocation = () => (
-    <Card sx={{ mb: 3 }}>
-      <CardContent>
+    <Card sx={{ mb: 3, height: '100%', width: '100%', display: 'flex', flexDirection: 'column' }}>
+      <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
           <Iconify icon="solar:map-point-bold" width={24} />
           <Typography variant="h6">Location</Typography>
@@ -275,21 +277,23 @@ export function ComedyDublinView() {
           {eventData.address}
         </Typography>
         
-        <Button variant="outlined" startIcon={<Iconify icon="solar:map-outline" />}>
-          Get directions
-        </Button>
+        <Box sx={{ mt: 'auto' }}>
+          <Button variant="outlined" startIcon={<Iconify icon="solar:map-outline" />}>
+            Get directions
+          </Button>
+        </Box>
       </CardContent>
     </Card>
   );
 
   const renderAgenda = () => (
-    <Card>
-      <CardContent>
+    <Card sx={{ mb: 3, height: '100%', width: '100%', display: 'flex', flexDirection: 'column' }}>
+      <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <Typography variant="h6" sx={{ mb: 3 }}>
           Agenda
         </Typography>
         
-        <Stack spacing={2}>
+        <Stack spacing={2} sx={{ flexGrow: 1 }}>
           {eventData.agenda.map((item, index) => (
             <Stack key={index} direction="row" alignItems="center" spacing={2}>
               <Box
@@ -351,6 +355,92 @@ export function ComedyDublinView() {
     </Card>
   );
 
+  const renderAbout = () => (
+    <Card sx={{ mb: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+        <Typography variant="h6" sx={{ mb: 3 }}>
+          About In Stitches Comedy Club
+        </Typography>
+        
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6 }}>
+          In Stitches Comedy Club is the best comedy show in Dublin. Live stand up comedy 7+ night a week bringing the top local and international comedians to our stage.
+        </Typography>
+
+        <Typography variant="subtitle1" fontWeight="medium" sx={{ mb: 2, color: 'primary.main' }}>
+          Daily Lineup
+        </Typography>
+
+        <Stack spacing={2} sx={{ flexGrow: 1 }}>
+          <Box>
+            <Typography variant="subtitle2" fontWeight="medium" sx={{ mb: 1 }}>
+              Mondays - "Retro Monday"
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, lineHeight: 1.6 }}>
+              A night where the best local and international comedians professional comedians drop in to work out their material before their television appearance or going on tour with drink deals on offer.
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, lineHeight: 1.6 }}>
+              This night gets a lot of surprises as you never know who might pop in - we have had acts like Mark Normand, Foil Arms and Hog, Joanne McNally, David McSavage and more.
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+              We also offer a €6.50 drink deal which includes all pints & glasses of wine.
+            </Typography>
+          </Box>
+
+          <Box>
+            <Typography variant="subtitle2" fontWeight="medium" sx={{ mb: 1 }}>
+              Tuesdays - "Two Mics Tuesday"
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, lineHeight: 1.6 }}>
+              A night where the best local and international comedians professional comedians drop in to work out their material before their television appearance or going on tour with drink deals on offer.
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, lineHeight: 1.6 }}>
+              This night gets a lot of surprises as you never know who might pop in - we have had acts like Mark Normand, Foil Arms and Hog, Joanne McNally, David McSavage and more.
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+              We also offer a €6.50 drink deal which includes all pints & glasses of wine.
+            </Typography>
+          </Box>
+
+          <Box>
+            <Typography variant="subtitle2" fontWeight="medium" sx={{ mb: 1 }}>
+              Wednesdays - "Raw Wednesdays"
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, lineHeight: 1.6 }}>
+              RAW Wednesday brings the best new comedy faces to our stage with the freshest comedians. A night to witness the next big comedy stars.
+            </Typography>
+          </Box>
+
+          <Box>
+            <Typography variant="subtitle2" fontWeight="medium" sx={{ mb: 1 }}>
+              Sunday - "Sunday Best"
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+              Sunday best comedy gig attracts the best comedians from around the world to our club.
+            </Typography>
+          </Box>
+
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="subtitle1" fontWeight="medium" sx={{ mb: 2, color: 'primary.main' }}>
+              Show Details
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              <strong>Doors:</strong> 8:30pm
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              <strong>Show:</strong> 9:00pm - 10:30pm
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              <strong>Fee:</strong> Adult: €12 + Booking Fee / Student Fee: €10 + Booking Fee
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              <strong>Location:</strong> Peadar Kearney's Pub (Cellar)
+            </Typography>
+          </Box>
+        </Stack>
+      </CardContent>
+    </Card>
+  );
+
   const renderFAQ = () => (
     <Card>
       <CardContent>
@@ -386,6 +476,153 @@ export function ComedyDublinView() {
   );
 
 
+  const renderBookingDialog = () => (
+    <Dialog
+      open={openBookingDialog}
+      onClose={() => setOpenBookingDialog(false)}
+      maxWidth="md"
+      fullWidth
+    >
+      <DialogTitle>
+        <Typography component="span" sx={{ fontWeight: 'bold', fontSize: '1.25rem' }}>
+          Select Date & Tickets
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          Choose your preferred date, time and number of tickets
+        </Typography>
+      </DialogTitle>
+      
+      <DialogContent>
+        <Stack spacing={4} sx={{ mt: 2 }}>
+          {/* Date Selection Cards */}
+          <Box>
+            <Typography variant="subtitle1" sx={{ mb: 3, fontWeight: 'bold' }}>
+              Select Date & Time
+            </Typography>
+            <Grid container spacing={2}>
+              {Array.from({ length: 7 }, (_, index) => {
+                const date = dayjs().add(index + 1, 'day'); // Start from tomorrow
+                const dayName = date.format('dddd');
+                const dateStr = date.format('DD MMM');
+                
+                return (
+                  <Grid item xs={6} sm={4} md={3} key={index}>
+                    <Card
+                      sx={{
+                        cursor: 'pointer',
+                        border: 1,
+                        borderColor: selectedDate.format('YYYY-MM-DD') === date.format('YYYY-MM-DD') 
+                          ? 'primary.main' 
+                          : 'divider',
+                        bgcolor: selectedDate.format('YYYY-MM-DD') === date.format('YYYY-MM-DD')
+                          ? 'primary.50'
+                          : 'background.paper',
+                        '&:hover': {
+                          borderColor: 'primary.main',
+                          bgcolor: 'primary.50',
+                        },
+                      }}
+                      onClick={() => {
+                        setSelectedDate(date);
+                        setSelectedTime('9:00 PM'); // Always 9:00 PM
+                      }}
+                    >
+                      <CardContent sx={{ textAlign: 'center', py: 2 }}>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                          {dayName}
+                        </Typography>
+                        <Typography variant="h6" sx={{ mb: 1 }}>
+                          {dateStr}
+                        </Typography>
+                        <Box>
+                          <Typography variant="caption" color="primary" sx={{ fontWeight: 'bold' }}>
+                            9:00 PM
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+                            Opens 8:30 PM
+                          </Typography>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </Box>
+
+
+          {/* Ticket Quantity */}
+          <Box>
+            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 'bold' }}>
+              Number of Tickets
+            </Typography>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={8}>
+                <Typography variant="body2" color="text.secondary">
+                  {selectedTicket.name} - {fCurrencyEUR(selectedTicket.price)} each
+                </Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  >
+                    -
+                  </Button>
+                  <Typography sx={{ minWidth: 30, textAlign: 'center' }}>
+                    {quantity}
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                  >
+                    +
+                  </Button>
+                </Stack>
+              </Grid>
+            </Grid>
+          </Box>
+
+          {/* Total Price */}
+          <Box sx={{ 
+            bgcolor: 'grey.50', 
+            p: 3, 
+            borderRadius: 2,
+            border: 1,
+            borderColor: 'grey.200'
+          }}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Typography variant="h6">
+                Total Amount
+              </Typography>
+              <Typography variant="h5" color="primary" sx={{ fontWeight: 'bold' }}>
+                {fCurrencyEUR(selectedTicket.price * quantity)}
+              </Typography>
+            </Stack>
+          </Box>
+        </Stack>
+      </DialogContent>
+      
+      <DialogActions sx={{ p: 3 }}>
+        <Button onClick={() => setOpenBookingDialog(false)}>
+          Cancel
+        </Button>
+        <Button 
+          variant="contained" 
+          onClick={() => {
+            setOpenBookingDialog(false);
+            setOpenCheckoutDialog(true);
+          }}
+        >
+          Proceed to Checkout
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+
   const renderCheckoutDialog = () => (
     <Dialog
       open={openCheckoutDialog}
@@ -405,7 +642,11 @@ export function ComedyDublinView() {
       <DialogContent>
         <StripeCheckoutForm
           eventData={eventData}
-          selectedDate={defaultDate}
+          selectedDate={{
+            date: selectedDate instanceof dayjs ? selectedDate.format('YYYY-MM-DD') : selectedDate,
+            time: selectedTime,
+            available: true,
+          }}
           selectedTicket={selectedTicket}
           quantity={quantity}
           onSuccess={handlePaymentSuccess}
@@ -429,17 +670,26 @@ export function ComedyDublinView() {
         <Box>
           {renderHeader()}
           {renderOrganizer()}
-          {/* Location, Agenda and FAQ in responsive layout for desktop */}
-          <Grid container spacing={3} sx={{ mb: 4 }}>
-            <Grid item xs={12} md={6}>
-              {/* Left column: Location and Agenda stacked */}
-              <Box>
+          {/* Location & Agenda row */}
+          <Grid container spacing={3} sx={{ mb: 4 }} alignItems="stretch">
+            <Grid item xs={12} md={6} sx={{ display: 'flex', flexGrow: 1, flexBasis: { md: 0 }, minWidth: 0 }}>
+              <Box sx={{ flexGrow: 1, width: '100%' }}>
                 {renderLocation()}
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6} sx={{ display: 'flex', flexGrow: 1, flexBasis: { md: 0 }, minWidth: 0 }}>
+              <Box sx={{ flexGrow: 1, width: '100%' }}>
                 {renderAgenda()}
               </Box>
             </Grid>
+          </Grid>
+
+          {/* About & FAQ row */}
+          <Grid container spacing={3} sx={{ mb: 4 }} alignItems="stretch">
             <Grid item xs={12} md={6}>
-              {/* Right column: FAQ */}
+              {renderAbout()}
+            </Grid>
+            <Grid item xs={12} md={6}>
               {renderFAQ()}
             </Grid>
           </Grid>
@@ -482,7 +732,7 @@ export function ComedyDublinView() {
             <Button
               variant="contained"
               size="large"
-              onClick={() => setOpenCheckoutDialog(true)}
+              onClick={() => setOpenBookingDialog(true)}
               sx={{
                 minWidth: 200,
                 py: 1.5,
@@ -497,6 +747,7 @@ export function ComedyDublinView() {
         </Container>
       </Box>
 
+      {renderBookingDialog()}
       {renderCheckoutDialog()}
     </>
   );

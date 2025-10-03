@@ -129,20 +129,18 @@ export const generateTicketPDF = async (bookingData) => {
     doc.setLineWidth(0.5);
     doc.line(20, 98, pageWidth - 20, 98);
 
-    // Right column - clean pricing section
-    doc.setTextColor(successGreen);
+    // Right column - booking ID for quick reference
+    doc.setTextColor(primaryBlue);
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
-    doc.text('TOTAL PAID', rightColumn + 20, 110, { align: 'center' });
+    doc.text('BOOKING REFERENCE', rightColumn + 20, 110, { align: 'center' });
 
-    doc.setFontSize(24);
+    doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.text(`€${bookingData.totalPrice}`, rightColumn + 20, 120, { align: 'center' });
-
-    doc.setTextColor(darkGray);
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`€${bookingData.unitPrice} per ticket`, rightColumn + 20, 126, { align: 'center' });
+    const bookingRefId = bookingData.paymentIntentId.startsWith('pi_') 
+      ? bookingData.paymentIntentId.substring(3, 18) 
+      : bookingData.paymentIntentId.substring(0, 15);
+    doc.text(bookingRefId, rightColumn + 20, 120, { align: 'center' });
 
     // Main divider line
     doc.setDrawColor(primaryBlue);
@@ -258,8 +256,6 @@ export const generateSimpleTicket = (bookingData) => {
 🏟️  VENUE: ${bookingData.venue}
 🎟️  TICKET: ${bookingData.ticketName} (Qty: ${bookingData.quantity})
 
-💰 TOTAL PAID: €${bookingData.totalPrice}
-    (€${bookingData.unitPrice} per ticket)
 
 🆔 BOOKING ID: ${bookingData.paymentIntentId}
 👤 CUSTOMER: ${bookingData.customerEmail}

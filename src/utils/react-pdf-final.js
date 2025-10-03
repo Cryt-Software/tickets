@@ -44,8 +44,6 @@ export const generateTicketPDF = async (bookingData) => {
       venue: pdfData.venue,
       ticketName: pdfData.ticketName,
       quantity: pdfData.quantity,
-      unitPrice: pdfData.unitPrice,
-      totalPrice: pdfData.totalPrice,
       hasQrCode: !!pdfData.qrCode
     });
     
@@ -84,9 +82,6 @@ export const generateSimpleTicket = (bookingData) => {
 📅 DATE: ${bookingData.eventDate}
 🏟️  VENUE: ${bookingData.venue}
 🎟️  TICKET: ${bookingData.ticketName} (Qty: ${bookingData.quantity})
-
-💰 TOTAL PAID: €${bookingData.totalPrice}
-    (€${bookingData.unitPrice} per ticket)
 
 🆔 BOOKING ID: ${bookingData.paymentIntentId}
 👤 CUSTOMER: ${bookingData.customerEmail}

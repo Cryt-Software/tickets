@@ -16,7 +16,7 @@ export async function GET(request) {
     // Generate sample booking data based on payment intent ID
     // In a real app, you'd fetch this from a database
     const bookingData = {
-      eventTitle: 'Comedy Dublin',
+      eventTitle: 'In Stitches Comedy Club',
       eventDate: 'October 15, 2024',
       venue: 'Peadar Kearney\'s Pub - Cellar',
       ticketName: 'General Admission',

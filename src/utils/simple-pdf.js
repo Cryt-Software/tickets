@@ -76,7 +76,7 @@ export const generateTicketPDF = async (bookingData) => {
     doc.text(`Venue: ${bookingData.venue}`, pageWidth / 2 - 30, 180, { align: 'center' });
     doc.text(`Ticket: ${bookingData.ticketName}`, pageWidth / 2 - 30, 185, { align: 'center' });
     doc.text(`Quantity: ${bookingData.quantity}`, pageWidth / 2 - 30, 190, { align: 'center' });
-    doc.text(`Total: €${bookingData.totalPrice}`, pageWidth / 2 - 30, 195, { align: 'center' });
+    doc.text(`Booking ID: ${bookingData.paymentIntentId.substring(0, 12)}...`, pageWidth / 2 - 30, 195, { align: 'center' });
 
     // Booking info
     doc.text(`Booking ID: ${bookingData.paymentIntentId}`, pageWidth / 2 - 30, 205, { align: 'center' });
@@ -121,8 +121,6 @@ export const generateSimpleTicket = (bookingData) => {
 🏟️  VENUE: ${bookingData.venue}
 🎟️  TICKET: ${bookingData.ticketName} (Qty: ${bookingData.quantity})
 
-💰 TOTAL PAID: €${bookingData.totalPrice}
-    (€${bookingData.unitPrice} per ticket)
 
 🆔 BOOKING ID: ${bookingData.paymentIntentId}
 👤 CUSTOMER: ${bookingData.customerEmail}

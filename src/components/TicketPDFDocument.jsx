@@ -191,13 +191,13 @@ const TicketPDFDocument = ({ bookingData }) => (
             </View>
           </View>
 
-          {/* Right Column - Pricing */}
+          {/* Right Column - QR Code Space */}
           <View style={styles.rightColumn}>
             <View style={styles.priceBox}>
-              <Text style={styles.priceLabel}>TOTAL PAID</Text>
-              <Text style={styles.priceAmount}>€{bookingData.totalPrice}</Text>
-              <Text style={styles.priceSubtext}>€{bookingData.unitPrice} per ticket</Text>
-              <Text style={styles.quantityText}>Qty: {bookingData.quantity}</Text>
+              <Text style={styles.priceLabel}>BOOKING DETAILS</Text>
+              <Text style={styles.priceAmount}>Qty: {bookingData.quantity}</Text>
+              <Text style={styles.priceSubtext}>Ticket Confirm</Text>
+              <Text style={styles.quantityText}>Ref: {bookingData.paymentIntentId.substring(0, 12)}</Text>
             </View>
           </View>
         </View>
